@@ -21,21 +21,40 @@ public class PeregrinesTeleOp extends OpMode {
 
     Boolean isFieldCentric;
     DrivePowers powers;
+    Pose stephenPose;
+
+    double headingPower;
+    PIDFController headingPIDF;
+
+    MerlinLauncher maxBernard = new MerlinLauncher();
 
     @Override
     public void init() {
         follower = Constants.create(hardwareMap);
+        maxBernard.init(hardwareMap);
 
+        PIDFController headingPIDF = new PIDFController(0.01, 0, 0.001, 0.05); // TODO toon ts
     }
 
     @Override
     public void loop() {
         // DRIVING
+        if (gamepad2.left_trigger > 0.2) {
+            maxBernard.autoAlign = true;
+        }
+        else {maxBernard.autoAlign = false;}
+
+
+        if (maxBernard.autoAlign) {
+            //Wyatt DO NOT TOUCH THIS!!
+            //TODO if there is an error its prob here
+            headingPower = headingPIDF.calculate(maxBernard.move(stephenPose.x(), stephenPose.y(), stephenPose.heading()), stephenPose.heading());
+        }
         if (isFieldCentric) {
             DrivePowers powers = ManualDrive.fieldCentric(
                     -gamepad1.left_stick_y,
                     gamepad1.left_stick_x,
-                    gamepad1.right_stick_x,
+                    headingPower,
                     follower.pose().heading()
             );
         }
@@ -44,7 +63,7 @@ public class PeregrinesTeleOp extends OpMode {
                     follower,
                     -gamepad1.left_stick_y,
                     gamepad1.left_stick_x,
-                    gamepad1.right_stick_x
+                    headingPower
             );
         }
 
@@ -55,13 +74,13 @@ public class PeregrinesTeleOp extends OpMode {
         }
 
 
-        Pose robotPose = follower.pose();
+        stephenPose = follower.pose();
 
         // TELEMETRY
-        telemetry.addData("X", robotPose.x());
-        telemetry.addData("Y", robotPose.y());
+        telemetry.addData("X", stephenPose.x());
+        telemetry.addData("Y", stephenPose.y());
         telemetry.addData("Field Centric", isFieldCentric);
-        telemetry.addData("Heading", Math.toDegrees(robotPose.heading()));
+        telemetry.addData("Heading", Math.toDegrees(stephenPose.heading()));
 
         // UPDATE
         if (isFieldCentric) {
