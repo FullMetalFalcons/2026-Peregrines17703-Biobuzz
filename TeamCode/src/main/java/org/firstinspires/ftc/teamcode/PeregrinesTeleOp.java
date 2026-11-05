@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.bylazar.configurables.annotations.Configurable;
+//import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.drivetrain.DrivePowers;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.follower.ManualDrive;
@@ -14,7 +14,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
-@Configurable
+//@Configurable
 @TeleOp (name = "Comp TeleOp")
 public class PeregrinesTeleOp extends OpMode {
     Follower follower;
@@ -25,6 +25,7 @@ public class PeregrinesTeleOp extends OpMode {
 
     double headingPower;
     PIDFController headingPIDF;
+    boolean autoAlignToggle = true;
 
     MerlinLauncher maxBernard = new MerlinLauncher();
 
@@ -33,22 +34,47 @@ public class PeregrinesTeleOp extends OpMode {
         follower = Constants.create(hardwareMap);
         maxBernard.init(hardwareMap);
 
+        isFieldCentric = true;
+
         PIDFController headingPIDF = new PIDFController(0.01, 0, 0.001, 0.05); // TODO toon ts
     }
 
     @Override
     public void loop() {
         // DRIVING
-        if (gamepad2.left_trigger > 0.2) {
-            maxBernard.autoAlign = true;
+        if (gamepad2.aWasPressed()) {
+            // maxBernard.autoAlign = true;
+            maxBernard.setLauncher(1);
         }
-        else {maxBernard.autoAlign = false;}
+        else if (gamepad2.aWasReleased()) {
+            // maxBernard.autoAlign = false;
+            maxBernard.setLauncher(0);
+        }
+
+        if (gamepad2.left_bumper) {
+            maxBernard.setIntake(1);
+        }
+        else if (gamepad2.right_bumper) {
+            maxBernard.setIntake(-1);
+        }
+        else {
+            maxBernard.setIntake(0);
+        }
+
+        if (gamepad2.backWasPressed()) {
+            autoAlignToggle = !autoAlignToggle;
+            isFieldCentric = !isFieldCentric;
+        }
 
 
-        if (maxBernard.autoAlign) {
-            //Wyatt DO NOT TOUCH THIS!!
-            //TODO if there is an error its prob here
+
+        if (maxBernard.autoAlign && autoAlignToggle) {
+            // Wyatt DO NOT TOUCH THIS!!
+            // TODO if there is an error its prob here
             headingPower = headingPIDF.calculate(maxBernard.move(stephenPose.x(), stephenPose.y(), stephenPose.heading()), stephenPose.heading());
+        }
+        else {
+            headingPower = gamepad1.right_stick_x;
         }
         if (isFieldCentric) {
             DrivePowers powers = ManualDrive.fieldCentric(
@@ -75,6 +101,7 @@ public class PeregrinesTeleOp extends OpMode {
 
 
         stephenPose = follower.pose();
+        maxBernard.update(100);
 
         // TELEMETRY
         telemetry.addData("X", stephenPose.x());

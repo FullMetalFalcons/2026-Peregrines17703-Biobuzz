@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 public class MerlinLauncher {
@@ -12,6 +13,8 @@ public class MerlinLauncher {
     public static double gear_p = 0, gear_f = 0; // TODO toon ts
 
     private boolean isLaunching = false;
+    private int intakePower = 0;
+    private int launchPower = 0;
     private boolean isIntaking = false;
 
     private boolean isRight = true;
@@ -19,6 +22,8 @@ public class MerlinLauncher {
     private double currentHeading;
 
     public boolean autoAlign = false;
+
+    private boolean isBusy = false;
 
 
     public void init(HardwareMap hwMap) {
@@ -31,7 +36,7 @@ public class MerlinLauncher {
         motorLaunch.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,
                 new PIDFCoefficients(launcher_p, 0, 0, launcher_f));
 
-        gear = (DcMotorEx) hwMap.dcMotor.get("gear");
+        gear = (DcMotorEx) hwMap.dcMotor.get("turret");
         gear.setDirection(DcMotorSimple.Direction.FORWARD);
         gear.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         gear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -84,10 +89,18 @@ public class MerlinLauncher {
                 new PIDFCoefficients(gear_p, 0, 0, gear_f));
 
 
-        if (isLaunching) { motorLaunch.setVelocity(distance); /* TODO 3 point equation on Desmos */ }
-        else { motorLaunch.setVelocity(0); }
+        //motorLaunch.setVelocity(distance);
+        motorLaunch.setPower(launchPower);
+        intake.setPower(intakePower);
+    }
+    public boolean isBusy() {
+        return isBusy;
+    }
 
-        if (isIntaking) { intake.setPower(1); }
-        else { intake.setPower(0); }
+    public void setIntake(int power) {
+        intakePower = power;
+    }
+    public void setLauncher(int power) {
+        launchPower = power;
     }
 }
