@@ -4,14 +4,13 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.Servo;
 
-public class MerlinLauncher {
-    public DcMotorEx motorLaunch, gear, intake;
+public class PeregrineSystem {
+    public DcMotorEx motorLaunch, intake;
+    public Servo matchLoaderLeft, matchLoaderRight;
     public static double launcher_p = 0, launcher_f = 0; // TODO toon ts
-    public static double gear_p = 0, gear_f = 0; // TODO toon ts
-
     private boolean isLaunching = false;
     private int intakePower = 0;
     private int launchPower = 0;
@@ -25,6 +24,8 @@ public class MerlinLauncher {
 
     private boolean isBusy = false;
 
+    public boolean isMatchLoaderActive = false;
+
 
     public void init(HardwareMap hwMap) {
         motorLaunch = (DcMotorEx) hwMap.dcMotor.get("flywheel");
@@ -36,20 +37,14 @@ public class MerlinLauncher {
         motorLaunch.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,
                 new PIDFCoefficients(launcher_p, 0, 0, launcher_f));
 
-        gear = (DcMotorEx) hwMap.dcMotor.get("turret");
-        gear.setDirection(DcMotorSimple.Direction.FORWARD);
-        gear.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        gear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        gear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        gear.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,
-                new PIDFCoefficients(gear_p, 0, 0, gear_f));
-
         intake = (DcMotorEx) hwMap.dcMotor.get("intake");
         intake.setDirection(DcMotorSimple.Direction.FORWARD);
         intake.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        matchLoaderLeft = (Servo) hwMap.servo.get("mll");
+        matchLoaderRight = (Servo) hwMap.servo.get("mlr");
 
     }
 
@@ -85,13 +80,19 @@ public class MerlinLauncher {
         motorLaunch.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,
                 new PIDFCoefficients(launcher_p, 0, 0, launcher_f));
 
-        gear.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,
-                new PIDFCoefficients(gear_p, 0, 0, gear_f));
-
 
         //motorLaunch.setVelocity(distance);
         motorLaunch.setPower(launchPower);
         intake.setPower(intakePower);
+
+        if (isMatchLoaderActive) {
+            matchLoaderRight.setPosition(1.0);
+            matchLoaderLeft.setPosition(1.0);
+        }
+        else {
+            matchLoaderLeft.setPosition(0.0);
+            matchLoaderRight.setPosition(0.0);
+        }
     }
     public boolean isBusy() {
         return isBusy;

@@ -7,10 +7,6 @@ import com.pedropathing.follower.ManualDrive;
 import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
@@ -27,27 +23,30 @@ public class PeregrinesTeleOp extends OpMode {
     PIDFController headingPIDF;
     boolean autoAlignToggle = true;
 
-    MerlinLauncher maxBernard = new MerlinLauncher();
+    PeregrineSystem maxBernard = new PeregrineSystem();
 
     @Override
     public void init() {
         follower = Constants.create(hardwareMap);
         maxBernard.init(hardwareMap);
 
-        isFieldCentric = true;
+        isFieldCentric = false;
 
-        PIDFController headingPIDF = new PIDFController(0.01, 0, 0.001, 0.05); // TODO toon ts
+        //PIDFController headingPIDF = new PIDFController(0.01, 0, 0.001, 0.05); // TODO toon ts
     }
 
     @Override
     public void loop() {
         // DRIVING
-        if (gamepad2.aWasPressed()) {
+        if (gamepad2.left_trigger >= 0.2) {
             // maxBernard.autoAlign = true;
             maxBernard.setLauncher(1);
         }
-        else if (gamepad2.aWasReleased()) {
+        else if (gamepad2.right_trigger >= 0.2) {
             // maxBernard.autoAlign = false;
+            maxBernard.setLauncher(-1);
+        }
+        else {
             maxBernard.setLauncher(0);
         }
 
@@ -66,17 +65,13 @@ public class PeregrinesTeleOp extends OpMode {
             isFieldCentric = !isFieldCentric;
         }
 
-
-
-        if (maxBernard.autoAlign && autoAlignToggle) {
-            // Wyatt DO NOT TOUCH THIS!!
-            // TODO if there is an error its prob here
-            headingPower = headingPIDF.calculate(maxBernard.move(stephenPose.x(), stephenPose.y(), stephenPose.heading()), stephenPose.heading());
+        if (gamepad2.a) {
+            maxBernard.isMatchLoaderActive = !maxBernard.isMatchLoaderActive;
         }
-        else {
-            headingPower = gamepad1.right_stick_x;
-        }
-        if (isFieldCentric) {
+
+        headingPower = gamepad1.right_stick_x;
+
+        /* if (isFieldCentric) {
             DrivePowers powers = ManualDrive.fieldCentric(
                     -gamepad1.left_stick_y,
                     gamepad1.left_stick_x,
@@ -91,13 +86,21 @@ public class PeregrinesTeleOp extends OpMode {
                     gamepad1.left_stick_x,
                     headingPower
             );
-        }
+       }
 
         // Other Controls
 
+        /*
         if (gamepad2.backWasPressed() || gamepad1.backWasPressed()) {
             isFieldCentric = !isFieldCentric;
         }
+        */
+
+        follower.manual(
+                -gamepad1.right_stick_y,
+                gamepad1.right_stick_x,
+                gamepad1.left_stick_x
+        );
 
 
         stephenPose = follower.pose();
@@ -110,9 +113,10 @@ public class PeregrinesTeleOp extends OpMode {
         telemetry.addData("Heading", Math.toDegrees(stephenPose.heading()));
 
         // UPDATE
-        if (isFieldCentric) {
-            ManualDrive.driveOrHold(follower, powers);
-        }
+        //if (isFieldCentric) {
+            //ManualDrive.driveOrHold(follower, powers);
+            //follower.manual(powers);
+        //}
         follower.update();
         telemetry.update();
 
