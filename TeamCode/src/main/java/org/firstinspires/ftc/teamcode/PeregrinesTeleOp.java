@@ -38,19 +38,19 @@ public class PeregrinesTeleOp extends OpMode {
     @Override
     public void loop() {
         // DRIVING
-        if (gamepad2.left_trigger >= 0.2) {
+        if (gamepad2.a) {
             // maxBernard.autoAlign = true;
-            maxBernard.setLauncher(1);
+            maxBernard.setLauncher(1.0);
         }
         else if (gamepad2.right_trigger >= 0.2) {
             // maxBernard.autoAlign = false;
-            maxBernard.setLauncher(-1);
+            maxBernard.setLauncher(-1.0);
         }
         else {
             maxBernard.setLauncher(0);
         }
 
-        if (gamepad2.left_bumper) {
+        if (gamepad2.left_trigger >= 0.2) {
             maxBernard.setIntake(1);
         }
         else if (gamepad2.right_bumper) {

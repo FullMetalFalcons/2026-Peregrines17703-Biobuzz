@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 @TeleOp
 public class FalconsTeleop extends OpMode {
     //Initialize motors, servos, sensors, imus, etc.
-    DcMotorEx motorLF, motorRF, motorLB, motorRB;
+    DcMotorEx motorLF, motorRF, motorLB, motorRB, flywheel;
     // TODO: Uncomment the following line if you are using servos
     //Servo claw;
 
@@ -25,6 +25,7 @@ public class FalconsTeleop extends OpMode {
         motorLB = (DcMotorEx) hardwareMap.dcMotor.get( Constants.drivetrainConfig.backLeftName.get() );
         motorRF = (DcMotorEx) hardwareMap.dcMotor.get( Constants.drivetrainConfig.frontRightName.get() );
         motorRB = (DcMotorEx) hardwareMap.dcMotor.get( Constants.drivetrainConfig.backRightName.get() );
+        flywheel = (DcMotorEx) hardwareMap.dcMotor.get("flywheel");
 
         // Use the following line as a template for defining new servos
         //claw = (Servo) hardwareMap.servo.get("claw");
@@ -47,6 +48,7 @@ public class FalconsTeleop extends OpMode {
         motorLB.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         motorRF.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         motorRB.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        flywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // This lets you look at encoder values while the OpMode is active
         // If you have a STOP_AND_RESET_ENCODER, make sure to put this below it
@@ -112,8 +114,6 @@ public class FalconsTeleop extends OpMode {
 
         //telemetry.addData("Label", "Information");
         //telemetry.update();
-
-
     }
 
     // Any additional methods go here

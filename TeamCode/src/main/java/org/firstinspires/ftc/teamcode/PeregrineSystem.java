@@ -12,8 +12,8 @@ public class PeregrineSystem {
     public Servo matchLoaderLeft, matchLoaderRight;
     public static double launcher_p = 0, launcher_f = 0; // TODO toon ts
     private boolean isLaunching = false;
-    private int intakePower = 0;
-    private int launchPower = 0;
+    private double intakePower = 0;
+    private double launchPower = 0;
     private boolean isIntaking = false;
 
     private boolean isRight = true;
@@ -28,14 +28,14 @@ public class PeregrineSystem {
 
 
     public void init(HardwareMap hwMap) {
-        motorLaunch = (DcMotorEx) hwMap.dcMotor.get("flywheel");
+        motorLaunch = (DcMotorEx) hwMap.dcMotor.get("shooter");
         motorLaunch.setDirection(DcMotorSimple.Direction.FORWARD);
         motorLaunch.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         motorLaunch.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorLaunch.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        motorLaunch.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,
-                new PIDFCoefficients(launcher_p, 0, 0, launcher_f));
+        /*motorLaunch.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,
+                new PIDFCoefficients(launcher_p, 0, 0, launcher_f));*/
 
         intake = (DcMotorEx) hwMap.dcMotor.get("intake");
         intake.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -43,8 +43,8 @@ public class PeregrineSystem {
         intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        matchLoaderLeft = (Servo) hwMap.servo.get("mll");
-        matchLoaderRight = (Servo) hwMap.servo.get("mlr");
+//        matchLoaderLeft = (Servo) hwMap.servo.get("mll");
+//        matchLoaderRight = (Servo) hwMap.servo.get("mlr");
 
     }
 
@@ -77,31 +77,31 @@ public class PeregrineSystem {
     }
 
     public void update(double distance) {
-        motorLaunch.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,
-                new PIDFCoefficients(launcher_p, 0, 0, launcher_f));
+        /*motorLaunch.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,
+                new PIDFCoefficients(launcher_p, 0, 0, launcher_f));*/
 
 
         //motorLaunch.setVelocity(distance);
         motorLaunch.setPower(launchPower);
         intake.setPower(intakePower);
 
-        if (isMatchLoaderActive) {
-            matchLoaderRight.setPosition(1.0);
-            matchLoaderLeft.setPosition(1.0);
-        }
-        else {
-            matchLoaderLeft.setPosition(0.0);
-            matchLoaderRight.setPosition(0.0);
-        }
+//        if (isMatchLoaderActive) {
+//            matchLoaderRight.setPosition(1.0);
+//            matchLoaderLeft.setPosition(1.0);
+//        }
+//        else {
+//            matchLoaderLeft.setPosition(0.0);
+//            matchLoaderRight.setPosition(0.0);
+//        }
     }
     public boolean isBusy() {
         return isBusy;
     }
 
-    public void setIntake(int power) {
+    public void setIntake(double power) {
         intakePower = power;
     }
-    public void setLauncher(int power) {
+    public void setLauncher(double power) {
         launchPower = power;
     }
 }
