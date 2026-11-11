@@ -43,8 +43,8 @@ public class PeregrineSystem {
         intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-//        matchLoaderLeft = (Servo) hwMap.servo.get("mll");
-//        matchLoaderRight = (Servo) hwMap.servo.get("mlr");
+        matchLoaderLeft = (Servo) hwMap.servo.get("mll");
+        matchLoaderRight = (Servo) hwMap.servo.get("mlr");
 
     }
 
@@ -85,14 +85,14 @@ public class PeregrineSystem {
         motorLaunch.setPower(launchPower);
         intake.setPower(intakePower);
 
-//        if (isMatchLoaderActive) {
-//            matchLoaderRight.setPosition(1.0);
-//            matchLoaderLeft.setPosition(1.0);
-//        }
-//        else {
-//            matchLoaderLeft.setPosition(0.0);
-//            matchLoaderRight.setPosition(0.0);
-//        }
+        if (isMatchLoaderActive) {
+            matchLoaderRight.setPosition(1.0);
+            matchLoaderLeft.setPosition(0.0);
+        }
+        else {
+            matchLoaderLeft.setPosition(0.5);
+            matchLoaderRight.setPosition(0.25);
+        }
     }
     public boolean isBusy() {
         return isBusy;

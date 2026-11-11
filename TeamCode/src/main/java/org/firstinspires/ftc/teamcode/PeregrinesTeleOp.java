@@ -38,7 +38,7 @@ public class PeregrinesTeleOp extends OpMode {
     @Override
     public void loop() {
         // DRIVING
-        if (gamepad2.a) {
+        if (gamepad2.left_trigger >= 0.2) {
             // maxBernard.autoAlign = true;
             maxBernard.setLauncher(1.0);
         }
@@ -50,7 +50,7 @@ public class PeregrinesTeleOp extends OpMode {
             maxBernard.setLauncher(0);
         }
 
-        if (gamepad2.left_trigger >= 0.2) {
+        if (gamepad2.left_bumper) {
             maxBernard.setIntake(1);
         }
         else if (gamepad2.right_bumper) {
@@ -65,7 +65,7 @@ public class PeregrinesTeleOp extends OpMode {
             isFieldCentric = !isFieldCentric;
         }
 
-        if (gamepad2.a) {
+        if (gamepad2.aWasPressed()) {
             maxBernard.isMatchLoaderActive = !maxBernard.isMatchLoaderActive;
         }
 
@@ -111,6 +111,7 @@ public class PeregrinesTeleOp extends OpMode {
         telemetry.addData("Y", stephenPose.y());
         telemetry.addData("Field Centric", isFieldCentric);
         telemetry.addData("Heading", Math.toDegrees(stephenPose.heading()));
+        telemetry.addData("Matchload Active: ", maxBernard.isMatchLoaderActive);
 
         // UPDATE
         //if (isFieldCentric) {

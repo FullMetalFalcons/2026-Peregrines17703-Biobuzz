@@ -22,6 +22,7 @@ public class Turret {
 
     public Point RightHive = new Point(58, 58);
     public Point LeftHive = new Point(58, 84);
+    //TODO gear ratio is 74/24
 
     public void init(HardwareMap hwMap, Point robot) {
         turret = (DcMotorEx) hwMap.dcMotor.get("turret");
